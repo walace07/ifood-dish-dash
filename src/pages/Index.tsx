@@ -8,12 +8,16 @@ import BarraFiltros from "@/components/BarraFiltros";
 import GridLojas from "@/components/GridLojas";
 import BotaoVerMais from "@/components/BotaoVerMais";
 import Footer from "@/components/Footer";
-import { restaurantesData, maisRestaurantes } from "@/data/mockData";
+import { restaurantesData } from "@/data/mockData";
 
 const Index = () => {
-  const [restaurantes, setRestaurantes] = useState(restaurantesData);
+  const [restaurantes, setRestaurantes] = useState(restaurantesData.slice(0, 8));
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [enderecoAtual, setEnderecoAtual] = useState("R. Augusta, 123");
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartTotal, setCartTotal] = useState(0);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleVerMais = async () => {
     setLoading(true);
@@ -21,16 +25,24 @@ const Index = () => {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Add more restaurants
-    setRestaurantes(prev => [...prev, ...maisRestaurantes]);
-    setHasMore(false); // No more restaurants to load in this demo
+    // Add more restaurants from the remaining restaurantesData
+    const nextRestaurantes = restaurantesData.slice(restaurantes.length, restaurantes.length + 4);
+    setRestaurantes(prev => [...prev, ...nextRestaurantes]);
+    setHasMore(restaurantes.length + 4 < restaurantesData.length);
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <HeaderSuperior />
+      <HeaderSuperior 
+        enderecoAtual={enderecoAtual}
+        onEnderecoChange={setEnderecoAtual}
+        cartItems={cartItems}
+        cartTotal={cartTotal}
+        isCartOpen={isCartOpen}
+        onCartToggle={() => setIsCartOpen(!isCartOpen)}
+      />
       
       {/* Categories Carousel */}
       <CarrosselCategorias />
